@@ -1,25 +1,27 @@
-UnauthorizedError:
-  description: Unauthorized
-  content:
-    application/json:
-      schema:
-        $ref: "#/schemas/Error"
+components:
+  responses:
+    UnauthorizedError:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
 
-NotFoundError:
-  description: Resource not found
-  content:
-    application/json:
-      schema:
-        $ref: "#/schemas/Error"
+    NotFoundError:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
 
-schemas:
-  Error:
-    type: object
-    required:
-      - message
-      - code
-    properties:
-      message:
-        type: string
-      code:
-        type: string
+  schemas:
+    Error:
+      type: object
+      required:
+        - message
+        - code
+      properties:
+        message:
+          type: string
+        code:
+          type: string
