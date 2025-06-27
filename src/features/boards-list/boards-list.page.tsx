@@ -40,7 +40,7 @@ function BoardsListPage() {
           });
         }}>
         <input name="name" />
-        <button type="submit" disabled={createBoardMutation.isPending}></button>
+        <button type="submit" disabled={createBoardMutation.isPending}>Create</button>
       </form>
 
       {boardsQuery.data?.map((board) => (
