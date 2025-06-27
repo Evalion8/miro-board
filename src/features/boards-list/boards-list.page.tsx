@@ -2,6 +2,8 @@ import { rqClient } from '@/shared/api/instance';
 import { ROUTES } from '@/shared/model/routes';
 import { useQueryClient } from '@tanstack/react-query';
 import { Link, generatePath } from 'react-router-dom';
+import { Card, CardHeader, CardFooter } from '@/shared/ui/kit/card';
+import { Button } from '@/shared/ui/kit/button';
 
 function BoardsListPage() {
   const queryClient = useQueryClient();
@@ -29,7 +31,7 @@ function BoardsListPage() {
   if (boardsQuery.isError) return <div>Error loading boards.</div>;
 
   return (
-    <div>
+    <div className="container mx-auto p-4">
       <h1>Boards list</h1>
       <form
         onSubmit={(e) => {
@@ -40,24 +42,36 @@ function BoardsListPage() {
           });
         }}>
         <input name="name" />
-        <button type="submit" disabled={createBoardMutation.isPending}>Create</button>
+        <button type="submit" disabled={createBoardMutation.isPending}>
+          Create
+        </button>
       </form>
 
-      {boardsQuery.data?.map((board) => (
-        <div key={board.id}>
-          <Link to={generatePath(ROUTES.BOARD, { boardId: board.id })}>
-            {board.name}
-          </Link>
-          <button
-            onClick={() =>
-              deleteBoardMutation.mutate({
-                params: { path: { boardId: board.id } },
-              })
-            }>
-            Delete
-          </button>
-        </div>
-      ))}
+      <div className="grid grid-cols-3 gap-4">
+        {boardsQuery.data?.map((board) => (
+          <Card key={board.id}>
+            <CardHeader>
+              <Button asChild variant="link">
+                <Link to={generatePath(ROUTES.BOARD, { boardId: board.id })}>
+                  {board.name}
+                </Link>
+              </Button>
+            </CardHeader>
+            <CardFooter>
+              <Button
+                variant="destructive"
+                disabled={deleteBoardMutation.isPending}
+                onClick={() =>
+                  deleteBoardMutation.mutate({
+                    params: { path: { boardId: board.id } },
+                  })
+                }>
+                Delete
+              </Button>
+            </CardFooter>
+          </Card>
+        ))}
+      </div>
     </div>
   );
 }
