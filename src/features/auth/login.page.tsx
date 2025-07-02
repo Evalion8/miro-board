@@ -1,13 +1,20 @@
-// import { rqClient } from "@/shared/api/instance";
+import { AuthLayout } from './auth-layout';
+import { Link } from 'react-router-dom';
+import { ROUTES } from '@/shared/model/routes';
 
 function LoginPage() {
-  // const loginMutation = rqClient.useMutation("post", "/auth/login");
-  // loginMutation.mutate({
-  //   body: {
+  return (
+    <AuthLayout
+      title="Enter"
+      description="Provide valid email"
+      footerText={
+        <>
+          No account? <Link to={ROUTES.REGISTER}>Sign up</Link>
+        </>
+      }
+      form={<form>{/* ваши поля */}</form>}
+    />
+  );
+}
 
-  //   }
-  // })
-    return <div>Login page</div>;
-  }
-  
-  export const Component = LoginPage;
+export const Component = LoginPage;
