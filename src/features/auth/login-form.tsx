@@ -21,9 +21,13 @@ export function LoginForm() {
   const form = useForm({
     resolver: zodResolver(loginSchema),
   });
+
+  const onSubmit = form.handleSubmit((data) => {
+    console.log(data);
+  });
   return (
     <Form {...form}>
-      <form className="flex flex-col gap-4">
+      <form className="flex flex-col gap-4" onSubmit={onSubmit}>
         <FormField
           control={form.control}
           name="email"
