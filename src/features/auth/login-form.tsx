@@ -1,5 +1,6 @@
 import { Button } from '@/shared/ui/kit/button';
 import {
+  Form,
   FormField,
   FormItem,
   FormLabel,
@@ -8,13 +9,21 @@ import {
 } from '@/shared/ui/kit/form';
 import { Input } from '@/shared/ui/kit/input';
 import { useForm } from 'react-hook-form';
-import { Form } from 'react-router-dom';
+import { z } from 'zod';
+import { zodResolver } from '../../../node_modules/@hookform/resolvers/zod/src/zod';
+
+const loginSchema = z.object({
+  email: z.string().email('Incorrect email'),
+  password: z.string().min(6, 'Password must be at least 6 symbols'),
+});
 
 export function LoginForm() {
-  const form = useForm();
+  const form = useForm({
+    resolver: zodResolver(loginSchema),
+  });
   return (
     <Form {...form}>
-      <form>
+      <form className="flex flex-col gap-4">
         <FormField
           control={form.control}
           name="email"
@@ -43,7 +52,9 @@ export function LoginForm() {
             </FormItem>
           )}
         />
-        <Button type="submit">Enter</Button>
+        <Button type="submit" className="mt-4">
+          Enter
+        </Button>
       </form>
     </Form>
   );
