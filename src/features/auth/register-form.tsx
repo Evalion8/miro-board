@@ -12,14 +12,21 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '../../../node_modules/@hookform/resolvers/zod/src/zod';
 
-const registerSchema = z.object({
-  email: z
-    .string({ required_error: 'Email is requiered!' })
-    .email('Incorrect email'),
+const registerSchema = z
+  .object({
+    email: z
+      .string({ required_error: 'Email is requiered!' })
+      .email('Incorrect email'),
 
-  password: z.string().min(6, 'Password must be at least 6 symbols'),
-  confirmPassword: z.string({ required_error: 'Password is required!' }),
-});
+    password: z
+      .string({ required_error: 'Password is requiered!' })
+      .min(6, 'Password must be at least 6 symbols'),
+    confirmPassword: z.string().optional(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    path: ['confirmPassword'],
+    message: 'Passwords do not match:(',
+  });
 
 export function RegisterForm() {
   const form = useForm({
@@ -60,8 +67,22 @@ export function RegisterForm() {
             </FormItem>
           )}
         />
+
+        <FormField
+          control={form.control}
+          name="confirmPassword"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Confirm Password</FormLabel>
+              <FormControl>
+                <Input type="password" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <Button type="submit" className="mt-4">
-          Enter
+          Register
         </Button>
       </form>
     </Form>
