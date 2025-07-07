@@ -56,6 +56,9 @@ export function LoginForm() {
             </FormItem>
           )}
         />
+        {errorMessage && (
+          <p className="text-destructive text-sm">{errorMessage}</p>
+        )}
         <Button disabled={isPending} type="submit" className="mt-4">
           Enter
         </Button>
