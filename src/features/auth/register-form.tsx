@@ -11,6 +11,8 @@ import { Input } from '@/shared/ui/kit/input';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '../../../node_modules/@hookform/resolvers/zod/src/zod';
+import { useRegister } from './use-register';
+
 
 const registerSchema = z
   .object({
@@ -33,9 +35,9 @@ export function RegisterForm() {
     resolver: zodResolver(registerSchema),
   });
 
-  const onSubmit = form.handleSubmit((data) => {
-    console.log(data);
-  });
+  const { errorMessage, isPending, register } = useRegister();
+
+  const onSubmit = form.handleSubmit(register)
   return (
     <Form {...form}>
       <form className="flex flex-col gap-4" onSubmit={onSubmit}>
@@ -81,7 +83,10 @@ export function RegisterForm() {
             </FormItem>
           )}
         />
-        <Button type="submit" className="mt-4">
+        {errorMessage && (
+          <p className="text-destructive text-sm">{errorMessage}</p>
+        )}
+        <Button disabled={isPending} type="submit" className="mt-4">
           Register
         </Button>
       </form>
