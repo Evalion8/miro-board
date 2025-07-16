@@ -10,8 +10,8 @@ import {
 import { Input } from '@/shared/ui/kit/input';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { zodResolver } from '../../../node_modules/@hookform/resolvers/zod/src/zod';
-import { useLogin } from './use-login';
+import { zodResolver } from '@hookform/resolvers/zod/src/zod.js';
+import { useLogin } from '../model/use-login';
 
 const loginSchema = z.object({
   email: z.string().email('Incorrect email'),
