@@ -87,10 +87,10 @@ register:
 refresh:
   summary: Refresh access token
   parameters:
-    - in: cookie
-      name: refreshToken
-      schema:
-        type: string
+  - in: cookie
+    name: refreshToken
+    schema:
+      type: string
   responses:
     '200':
       description: Access token refreshed successfully

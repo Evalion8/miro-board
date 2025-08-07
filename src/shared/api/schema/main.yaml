@@ -11,37 +11,41 @@ components:
       scheme: bearer
       bearerFormat: JWT
 
+
 paths:
+
   /auth/login:
     post:
-      $ref: './endpoints/auth.yaml#/login'
+      $ref: "./endpoints/auth.yaml#/login"
 
   /auth/register:
     post:
-      $ref: './endpoints/auth.yaml#/register'
+      $ref: "./endpoints/auth.yaml#/register"
 
   /auth/refresh:
     post:
-      $ref: './endpoints/auth.yaml#/refresh'
+      $ref: "./endpoints/auth.yaml#/refresh"
 
   /boards:
     get:
-      $ref: './endpoints/boards.yaml#/getAllBoards'
+      $ref: "./endpoints/boards.yaml#/getAllBoards"
 
     post:
-      $ref: './endpoints/boards.yaml#/createBoard'
+      $ref: "./endpoints/boards.yaml#/createBoard"
 
   /boards/{boardId}:
     get:
-      $ref: './endpoints/boards.yaml#/getBoardById'
+      $ref: "./endpoints/boards.yaml#/getBoardById"
 
     delete:
-      $ref: './endpoints/boards.yaml#/deleteBoard'
+      $ref: "./endpoints/boards.yaml#/deleteBoard"
 
   /boards/{boardId}/favorite:
     put:
-      $ref: './endpoints/boards.yaml#/updateBoardFavorite'
+      $ref: "./endpoints/boards.yaml#/updateBoardFavorite"
 
   /boards/{boardId}/rename:
     put:
-      $ref: './endpoints/boards.yaml#/renameBoard'
+      $ref: "./endpoints/boards.yaml#/renameBoard"
+
+      
