@@ -1,75 +1,117 @@
 import { type ApiSchemas } from '../../schema';
 import { http } from '../http';
 import { HttpResponse } from 'msw';
+import { verifyTokenOrThrow } from '../session';
 
-const userPasswords = new Map<string, string>();
-const mockUsers: ApiSchemas['User'][] = [
+const now = new Date().toISOString();
+
+const boards: ApiSchemas['Board'][] = [
   {
-    id: '1',
-    email: 'admin@gmail.com',
+    id: 'board-1',
+    name: 'Marketing Campaign',
+    createdAt: now,
+    updatedAt: now,
+    lastOpenedAt: now,
+    isFavorite: false,
+  },
+  {
+    id: 'board-2',
+    name: 'Product Roadmap',
+    createdAt: now,
+    updatedAt: now,
+    lastOpenedAt: now,
+    isFavorite: false,
   },
 ];
 
-userPasswords.set('admin@gmail.com', '123456');
-
-const mockTokens = new Map<string, string>();
-
 export const boardsHandlers = [
-  http.post('/auth/login', async ({ request }) => {
-    const body = await request.json();
-
-    const user = mockUsers.find((u) => u.email === body.email);
-    const storedPassword = userPasswords.get(body.email);
-
-    if (!user || !storedPassword || storedPassword !== body.password) {
-      return HttpResponse.json(
-        {
-          message: 'Неверный email или пароль',
-          code: 'INVALID_CREDENTIALS',
-        },
-        { status: 401 }
-      );
-    }
-
-    const token = `mock-token-${Date.now()}`;
-    return HttpResponse.json(
-      {
-        accessToken: token,
-        user,
-      },
-      { status: 200 }
-    );
+  http.get('/boards', async (ctx) => {
+    await verifyTokenOrThrow(ctx.request);
+    return HttpResponse.json(boards);
   }),
 
-  http.post('/auth/register', async ({ request }) => {
-    const body = await request.json();
+  http.get('/boards/{boardId}', async ({ params, request }) => {
+    await verifyTokenOrThrow(request);
+    const { boardId } = params;
+    const board = boards.find((board) => board.id === boardId);
 
-    if (mockUsers.some((u) => u.email === body.email)) {
+    if (!board) {
       return HttpResponse.json(
-        {
-          message: 'Пользователь уже существует',
-          code: 'USER_EXISTS',
-        },
-        { status: 400 }
+        { message: 'Board not found', code: 'NOT_FOUND' },
+        { status: 404 }
+      );
+    }
+    return HttpResponse.json(board);
+  }),
+
+  http.post('/boards', async (ctx) => {
+    await verifyTokenOrThrow(ctx.request);
+
+    const now = new Date().toISOString();
+    const board: ApiSchemas['Board'] = {
+      id: crypto.randomUUID(),
+      name: 'New Board',
+      createdAt: now,
+      updatedAt: now,
+      lastOpenedAt: now,
+      isFavorite: false,
+    };
+
+    boards.push(board);
+    return HttpResponse.json(board, { status: 201 });
+  }),
+
+  http.put('/boards/{boardId}/favorite', async ({ params, request }) => {
+    await verifyTokenOrThrow(request);
+    const { boardId } = params;
+    const board = boards.find((board) => board.id === boardId);
+
+    if (!board) {
+      return HttpResponse.json(
+        { message: 'Board not found', code: 'NOT_FOUND' },
+        { status: 404 }
       );
     }
 
-    const newUser: ApiSchemas['User'] = {
-      id: String(mockUsers.length + 1),
-      email: body.email,
-    };
+    const data = (await request.json()) as ApiSchemas['UpdateBoardFavorite'];
+    board.isFavorite = data.isFavorite;
+    board.updatedAt = new Date().toISOString();
 
-    const token = `mock-token-${Date.now()}`;
-    mockUsers.push(newUser);
-    userPasswords.set(body.email, body.password);
-    mockTokens.set(body.email, token);
+    return HttpResponse.json(board, { status: 201 });
+  }),
 
-    return HttpResponse.json(
-      {
-        accessToken: token,
-        user: newUser,
-      },
-      { status: 201 }
-    );
+  http.put('/boards/{boardId}/rename', async ({ params, request }) => {
+    await verifyTokenOrThrow(request);
+    const { boardId } = params;
+    const board = boards.find((board) => board.id === boardId);
+
+    if (!board) {
+      return HttpResponse.json(
+        { message: 'Board not found', code: 'NOT_FOUND' },
+        { status: 404 }
+      );
+    }
+
+    const data = (await request.json()) as ApiSchemas['RenameBoard'];
+    board.name = data.name;
+    board.updatedAt = new Date().toISOString();
+
+    return HttpResponse.json(board, { status: 201 });
+  }),
+
+  http.delete('/boards/{boardId}', async ({ params, request }) => {
+    await verifyTokenOrThrow(request);
+    const { boardId } = params;
+    const index = boards.findIndex((board) => board.id === boardId);
+
+    if (index === -1) {
+      return HttpResponse.json(
+        { message: 'Board not found', code: 'NOT_FOUND' },
+        { status: 404 }
+      );
+    }
+
+    boards.splice(index, 1);
+    return new HttpResponse(null, { status: 204 });
   }),
 ];
